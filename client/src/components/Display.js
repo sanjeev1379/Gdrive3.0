@@ -1,47 +1,58 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./Global.css";
-
-const Display = ({contract, account}) => {
-    const [files, setFiles] = useState([]);
-    const getUploadedFiles = async () => {
-        let filesArray;
-        const selectedAddress = document.querySelector(".address").value;
-        if(selectedAddress) {
-            filesArray =  await contract.display(selectedAddress);
-        } else {
-            console.log('Display Account',account)
-            filesArray = await contract.display(account)
-        }
-
-        const isEmpty = Object.keys(filesArray).length === 0;
-        if(!isEmpty) {
-            const strFiles = filesArray.toString();
-            const strArray = strFiles.split(",");
-            const images = strArray.map((item, index)=> {
-                if(item.substring(7) != 'undefined' && item.substring(7) != undefined) {
-                    return (
-                        <a href={item} key={index} target="_blank">
-                            <img 
-                                key={index} 
-                                src={`https://gateway.pinata.cloud/ipfs/${item.substring(6)}`}
-                                alt={'Images'}
-                                className="image-list" />
-                        </a>
-                    )
-                }
-            });
-            setFiles(images);
-        } else {
-            alert('No Image to display!')
-        }
+const Display = ({ contract, account }) => {
+  const [data, setData] = useState("");
+  const getdata = async () => {
+    let dataArray;
+    const Otheraddress = document.querySelector(".address").value;
+    try {
+        console.log("Otheraddress",Otheraddress)
+      if (Otheraddress) {
+        dataArray = await contract.display(Otheraddress);
+        console.log(dataArray);
+      } else {
+        dataArray = await contract.display(account);
+      }
+    } catch (e) {
+      console.log("You don't have access", e);
     }
-    return <>
-        <div className="image-list">{files && files.length > 0 ? files : ''} </div>
-        <input type="text" placeholder="Enter Address" className="address" />
-        <button 
-            className="center button" 
-            onClick={getUploadedFiles}> Get Uploaded Files </button>
-    </>
-}
+    const isEmpty = Object.keys(dataArray).length === 0;
 
+    if (!isEmpty) {
+      const str = dataArray.toString();
+      const str_array = str.split(",");
+      // console.log(str);
+      // console.log(str_array);
+      const images = str_array.map((item, i) => {
+        console.log("item",item)
+        return (
+          <a href={item} key={i} target="_blank">
+            <img
+              key={i}
+              src={item}
+              alt="new"
+              className="image-list"
+            ></img>
+          </a>
+        );
+      });
+      setData(images);
+    } else {
+      alert("No image to display");
+    }
+  };
+  return (
+    <>
+      <div className="image-list">{data}</div>
+      <input
+        type="text"
+        placeholder="Enter Address"
+        className="address"
+      ></input>
+      <button className="center button" onClick={getdata}>
+        Get Data
+      </button>
+    </>
+  );
+};
 export default Display;
